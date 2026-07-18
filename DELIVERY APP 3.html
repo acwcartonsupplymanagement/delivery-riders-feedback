@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<title>🚚 Delivery Monitor – Ghana Post Accra West</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', system-ui, -apple-system, sans-serif; }
+  :root {
+    --bg:#0a2540; --bg2:#1a3f7a;
+    --card: rgba(255,255,255,0.07); --border: rgba(255,255,255,0.15);
+    --text:#f0f4ff; --muted:#b0c8f0;
+    --blue:#1e6ef0; --blue2:#0a4bb5;
+    --cyan:#22d3ee; --purple:#a78bfa; --pink:#f472b6;
+    --orange:#f59e0b; --green:#34d399; --red:#f87171; --white:#fff;
+    --radius:20px; --transition:.3s cubic-bezier(.22,1,.36,1); --sidebar-w:260px;
+  }
+  html { font-size:15px; }
+  body { background:var(--bg); color:var(--text); min-height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+  ::-webkit-scrollbar { width:5px; height:5px; }
+  ::-webkit-scrollbar-track { background:var(--bg2); }
+  ::-webkit-scrollbar-thumb { background:var(--orange); border-radius:10px; }
+  .hidden { display:none !important; }
+  .flex { display:flex; } .flex-col { flex-direction:column; }
+  .items-center { align-items:center; } .justify-between { justify-content:space-between; }
+  .gap-2{gap:8px;} .gap-3{gap:12px;} .gap-4{gap:16px;} .flex-wrap{flex-wrap:wrap;}
+  .text-center{text-align:center;} .text-muted{color:var(--muted);}
+  .text-sm{font-size:.78rem;} .text-xs{font-size:.68rem;} .font-bold{font-weight:700;}
+
+  .btn { padding:8px 22px; border-radius:40px; border:none; font-weight:600; font-size:.78rem; cursor:pointer;
+    transition:var(--transition); display:inline-flex; align-items:center; gap:6px;
+    background:var(--card); color:var(--text); border:1px solid var(--border); backdrop-filter:blur(6px); letter-spacing:.02em; }
+  .btn:hover { transform:translateY(-2px) scale(1.02); filter:brightness(1.15); box-shadow:0 8px 28px rgba(30,110,240,.3); }
+  .btn-primary { background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff; border:none; }
+  .btn-success { background:linear-gradient(135deg,var(--green),#0d9488); color:#fff; border:none; }
+  .btn-danger { background:linear-gradient(135deg,var(--red),#dc2626); color:#fff; border:none; }
+  .btn-orange { background:linear-gradient(135deg,var(--orange),#d97706); color:#fff; border:none; }
+  .btn-ghost { background:rgba(255,255,255,.06); border:1px solid var(--border); }
+  .btn-sm { padding:5px 14px; font-size:.7rem; }
+  .btn-full { width:100%; justify-content:center; }
+
+  input, select, textarea {
+    background:rgba(255,255,255,.06); border:1.5px solid var(--border); border-radius:12px;
+    padding:10px 14px; color:var(--text); font-size:.85rem; width:100%; transition:var(--transition); outline:none;
+  }
+  input:focus, select:focus, textarea:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(245,158,11,.15); }
+  input::placeholder { color:var(--muted); opacity:.5; }
+  label { font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:4px; }
+  select option { background:#1a3f7a; color:#f0f4ff; }
+
+  #login-view {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 30% 20%, #123566 0%, var(--bg) 60%);
+  }
+  .login-card {
+    background:var(--card); border:1px solid var(--border); border-radius:24px; padding:36px 32px;
+    width:340px; backdrop-filter:blur(10px); box-shadow:0 20px 60px rgba(0,0,0,.4);
+  }
+  .login-card h1 { font-size:1.3rem; margin-bottom:4px; }
+  .login-card .sub { color:var(--muted); font-size:.8rem; margin-bottom:22px; }
+  .login-card label { margin-top:14px; }
+
+  #loading-overlay {
+    position:fixed; inset:0; background:var(--bg); z-index:999; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:18px;
+  }
+  .loader-ring { width:56px; height:56px; border-radius:50%; border:4px solid rgba(255,255,255,.15); border-top-color:var(--orange); animation:spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  #loadSub { color:var(--muted); font-size:.85rem; }
+  .loader-steps { display:flex; gap:8px; }
+  .loader-step { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.2); }
+  .loader-step.active { background:var(--orange); box-shadow:0 0 10px var(--orange); }
+  .loader-step.done { background:var(--green); }
+
+  #app-view { flex:1; display:flex; overflow:hidden; }
+  #mainSidebar {
+    width:var(--sidebar-w); background:var(--bg2); flex-shrink:0; display:flex; flex-direction:column;
+    border-right:1px solid var(--border); transition:var(--transition);
+  }
+  .sidebar-header { padding:22px 20px; border-bottom:1px solid var(--border); }
+  .sidebar-header .logo { font-size:1.05rem; font-weight:700; }
+  .sidebar-header .loc { font-size:.72rem; color:var(--muted); margin-top:3px; }
+  .nav-item {
+    padding:12px 20px; display:flex; align-items:center; gap:10px; cursor:pointer; font-size:.85rem;
+    color:var(--muted); border-left:3px solid transparent; transition:var(--transition);
+  }
+  .nav-item:hover { background:rgba(255,255,255,.05); color:var(--text); }
+  .nav-item.active { background:rgba(30,110,240,.15); color:#fff; border-left:3px solid var(--orange); font-weight:600; }
+  .sidebar-footer { margin-top:auto; padding:16px 20px; border-top:1px solid var(--border); font-size:.72rem; color:var(--muted); }
+
+  #main-content { flex:1; overflow-y:auto; padding:26px 32px 60px; }
+  .page-title { font-size:1.3rem; font-weight:700; margin-bottom:2px; }
+  .page-sub { color:var(--muted); font-size:.82rem; margin-bottom:22px; }
+
+  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
+  .stat-card .num { font-size:1.7rem; font-weight:700; }
+  .stat-card .label { font-size:.72rem; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:.05em; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+
+  .date-section { border:1px solid var(--border); border-radius:16px; margin-bottom:12px; overflow:hidden; }
+  .date-header { padding:14px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,.03); }
+  .date-header:hover { background:rgba(255,255,255,.06); }
+  .date-header .title { font-weight:700; font-size:.92rem; }
+  .date-header .sub { font-size:.72rem; color:var(--muted); margin-top:2px; }
+  .chevron { transition:var(--transition); color:var(--muted); }
+  .date-section.open .chevron { transform:rotate(90deg); }
+  .date-body { display:none; padding:4px 18px 16px; }
+  .date-section.open .date-body { display:block; }
+
+  .route-card { border:1px solid var(--border); border-radius:14px; padding:14px; margin-top:10px; background:rgba(255,255,255,.02); }
+  .route-top { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; }
+  .route-name { font-weight:700; font-size:.9rem; }
+  .chip { display:inline-block; border-radius:20px; padding:2px 10px; font-size:.68rem; margin-right:4px; margin-top:6px; }
+  .chip-green { background:rgba(52,211,153,.15); color:var(--green); }
+  .chip-red { background:rgba(248,113,113,.15); color:var(--red); }
+  .metrics { display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:.75rem; color:var(--muted); }
+  .metrics b { color:var(--text); }
+  .toggle-link { font-size:.72rem; color:var(--cyan); cursor:pointer; margin-top:8px; display:inline-block; }
+
+  table { width:100%; border-collapse:collapse; margin-top:8px; font-size:.75rem; }
+  table.hidden-table { display:none; }
+  th, td { border-bottom:1px solid var(--border); padding:7px 8px; text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:.68rem; text-transform:uppercase; letter-spacing:.04em; }
+
+  .empty-state { padding:40px; text-align:center; color:var(--muted); }
+
+  #toast-wrap { position:fixed; bottom:20px; right:20px; z-index:1000; display:flex; flex-direction:column; gap:8px; }
+  .toast { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px 18px; font-size:.8rem; box-shadow:0 8px 24px rgba(0,0,0,.4); animation:slideIn .25s ease; }
+  .toast.ok { border-left:4px solid var(--green); }
+  .toast.warn { border-left:4px solid var(--orange); }
+  .toast.err { border-left:4px solid var(--red); }
+  @keyframes slideIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+
+  .hamburger { display:none; }
+  @media (max-width:800px) {
+    #mainSidebar { position:fixed; left:-280px; top:0; bottom:0; z-index:200; }
+    #mainSidebar.open { left:0; }
+    .hamburger { display:flex; }
+    #main-content { padding:20px 16px 60px; }
+    #sidebarOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:150; }
+    #sidebarOverlay.active { display:block; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="loading-overlay">
+    <div class="loader-ring"></div>
+    <div id="loadSub">Connecting…</div>
+    <div class="loader-steps">
+      <div class="loader-step" id="ls0"></div>
+      <div class="loader-step" id="ls1"></div>
+      <div class="loader-step" id="ls2"></div>
+      <div class="loader-step" id="ls3"></div>
+    </div>
+  </div>
+
+  <div id="login-view">
+    <div class="login-card">
+      <h1>🚚 Delivery Monitor</h1>
+      <div class="sub">Ghana Post · Accra West Region</div>
+      <label>Select Your Role</label>
+      <select id="loginUser">
+        <option value="">Select your role…</option>
+      </select>
+      <label style="margin-top:12px;">PIN</label>
+      <input type="password" id="loginPw" placeholder="Enter PIN" maxlength="8" autocomplete="current-password">
+      <button class="btn btn-primary btn-full" style="margin-top:20px;" onclick="doLogin()">Sign In</button>
+      <div class="text-xs text-muted" style="margin-top:14px;">Default PIN: <b>1234</b></div>
+    </div>
+  </div>
+
+  <div id="app-view" class="hidden">
+    <div id="sidebarOverlay" onclick="closeDrawer()"></div>
+    <div id="mainSidebar">
+      <div class="sidebar-header">
+        <div class="logo">🚚 Delivery Monitor</div>
+        <div class="loc">Accra West Region</div>
+      </div>
+      <div id="navItems"></div>
+      <div class="sidebar-footer">
+        <div id="uName" class="font-bold text-sm" style="color:#fff;"></div>
+        <div id="uRole" class="text-xs text-muted" style="margin-top:2px;"></div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;" onclick="logout()">Log Out</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="main-content">
+      <div class="flex items-center gap-3" style="margin-bottom:10px;">
+        <button class="hamburger btn btn-ghost btn-sm" onclick="toggleDrawer()">☰</button>
+      </div>
+
+      <div id="page-overview" class="page">
+        <div class="page-title">Overview</div>
+        <div class="page-sub">Live snapshot of all delivery feedback</div>
+        <div class="stat-grid" id="ov-stats"></div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">Most Recent Day</div>
+          <div id="ov-recent"></div>
+        </div>
+      </div>
+
+      <div id="page-reports" class="page hidden">
+        <div class="page-title">Reports &amp; Analytics</div>
+        <div class="page-sub">Trends across all recorded delivery days</div>
+        <div class="stat-grid" id="rep-stats"></div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">Average Rating Over Time</div>
+          <canvas id="chartRating" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">Response Volume Over Time</div>
+          <canvas id="chartVolume" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">On-Time % by Route (Top 8)</div>
+          <canvas id="chartOnTime" height="160"></canvas>
+        </div>
+      </div>
+
+      <div id="page-feedback" class="page hidden">
+        <div class="page-title">Feedback by Date</div>
+        <div class="page-sub">Every response, grouped by day and route</div>
+        <div id="sections"></div>
+      </div>
+
+      <div id="page-routes" class="page hidden">
+        <div class="page-title">Routes</div>
+        <div class="page-sub">Aggregate performance per route, across all dates</div>
+        <div id="routes-list"></div>
+      </div>
+
+      <div id="page-riders" class="page hidden">
+        <div class="page-title">Rider Assignments</div>
+        <div class="page-sub">Record which rider covered which route each day</div>
+        <div class="card" style="max-width:480px;">
+          <label>Date</label>
+          <input type="date" id="a-date">
+          <label style="margin-top:12px;">Route / Area</label>
+          <input type="text" id="a-route" list="route-options" placeholder="e.g. Dansoman">
+          <datalist id="route-options"></datalist>
+          <label style="margin-top:12px;">Rider Name</label>
+          <input type="text" id="a-rider" placeholder="e.g. Kwame Owusu">
+          <label style="margin-top:12px;">Notes (optional)</label>
+          <input type="text" id="a-notes" placeholder="e.g. covering for Ama">
+          <button class="btn btn-success btn-full" style="margin-top:16px;" onclick="submitAssignment()">Save Assignment</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Date</th><th>Route</th><th>Rider</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="assign-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="page-export" class="page hidden">
+        <div class="page-title">Export</div>
+        <div class="page-sub">Download all feedback as a spreadsheet-ready CSV file</div>
+        <div class="card" style="max-width:420px;">
+          <button class="btn btn-orange btn-full" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+      </div>
+
+      <div id="page-users" class="page hidden">
+        <div class="page-title">Users</div>
+        <div class="page-sub">Create and manage logins. Only Post Master can see this page.</div>
+        <div class="card" style="max-width:480px;">
+          <label>Full Name</label>
+          <input type="text" id="u-name" placeholder="e.g. Kwame Asante">
+          <label style="margin-top:12px;">Username</label>
+          <input type="text" id="u-username" placeholder="e.g. kwame">
+          <label style="margin-top:12px;">Role</label>
+          <select id="u-role">
+            <option value="Post Master">Post Master</option>
+            <option value="Operations Head">Operations Head</option>
+            <option value="EMS Coordinator">EMS Coordinator</option>
+            <option value="Regional Head">Regional Head</option>
+          </select>
+          <label style="margin-top:12px;">PIN</label>
+          <input type="password" id="u-pin" placeholder="4-8 digit PIN" maxlength="8">
+          <button class="btn btn-success btn-full" style="margin-top:16px;" onclick="createUser()">Create Login</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th></th></tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-wrap"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+  // ============================================================
+  // YOUR DEPLOYMENT URL - REPLACE WITH YOUR ACTUAL URL
+  // ============================================================
+  const API_URL = 'https://script.google.com/macros/s/AKfycbz4QUrSZXERGnGDkkCmgbAUIojgUqFl5v3DevaJ9cQzUc-cQuWk2gzTLZ3zB_O-ELHJ/exec';
+  
+  let STATE = { user: null, data: null, charts: {}, users: [] };
+
+  const NAV = [
+    { id:'overview', icon:'📊', label:'Overview' },
+    { id:'reports',  icon:'📈', label:'Reports & Analytics' },
+    { id:'feedback', icon:'📅', label:'Feedback by Date' },
+    { id:'routes',   icon:'🛣️', label:'Routes' },
+    { id:'riders',   icon:'🏍️', label:'Rider Assignments', requiresEdit:true },
+    { id:'export',   icon:'📤', label:'Export' },
+    { id:'users',    icon:'👤', label:'Users', requiresUserAdmin:true }
+  ];
+
+  // Role permissions - controls what each role can do
+  const ROLES = {
+    'Post Master':      { canEdit: true,  canManageUsers: true,  icon: '📮' },
+    'Operations Head':  { canEdit: true,  canManageUsers: false, icon: '⚙️' },
+    'EMS Coordinator':  { canEdit: true,  canManageUsers: false, icon: '🚑' },
+    'Regional Head':    { canEdit: false, canManageUsers: false, icon: '👁️' }
+  };
+
+  // DEFAULT USERS - these are created automatically if they don't exist in the backend
+  const DEFAULT_USERS = [
+    { name:'Post Master', username:'postmaster', role:'Post Master', pin:'1234' },
+    { name:'Operations Head', username:'opshead', role:'Operations Head', pin:'1234' },
+    { name:'EMS Coordinator', username:'emscoord', role:'EMS Coordinator', pin:'1234' },
+    { name:'Regional Head', username:'regional', role:'Regional Head', pin:'1234' }
+  ];
+
+  function $(id) { return document.getElementById(id); }
+
+  function toast(msg, type) {
+    type = type || 'ok';
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = msg;
+    $('toast-wrap').appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  // ─── LOGIN ───
+  function populateLoginDropdown() {
+    fetch(API_URL + '?action=listUsers')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) throw new Error(res.error || 'listUsers failed');
+        if (!res.users || !res.users.length) throw new Error('No users returned');
+        // Use the actual user accounts from the backend
+        fillLoginDropdown(res.users.filter(u => u.active));
+      })
+      .catch(err => {
+        console.warn('Could not load users from backend, using fallback list:', err.message);
+        toast('⚠️ Using default logins (backend not reachable)', 'warn');
+        // Show the default users as available logins
+        fillLoginDropdown(DEFAULT_USERS.map(u => ({ ...u, active: true })));
+      });
+  }
+
+  function fillLoginDropdown(users) {
+    // Show the role name in the dropdown (display name)
+    $('loginUser').innerHTML = '<option value="">Select your role…</option>' +
+      users.map(u => `<option value="${esc(u.username)}">${esc(u.name)} (${esc(u.role)})</option>`).join('');
+  }
+
+  function doLogin() {
+    const username = $('loginUser').value;
+    const pin = $('loginPw').value.trim();
+    if (!username) { toast('Select your role', 'warn'); return; }
+    if (!pin) { toast('Enter your PIN', 'warn'); return; }
+
+    $('login-view').classList.add('hidden');
+    $('loading-overlay').classList.remove('hidden');
+    setLoadStep(0, 'Verifying credentials…');
+
+    // First try to authenticate with the backend
+    fetch(API_URL, { 
+      method: 'POST', 
+      body: JSON.stringify({ action:'login', username, pin }) 
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.ok && res.account) {
+          // Successfully logged in via backend
+          STATE.user = res.account;
+          completeLogin();
+          return;
+        }
+        // If backend login fails, check against default users
+        const defaultUser = DEFAULT_USERS.find(u => u.username === username && u.pin === pin);
+        if (defaultUser) {
+          STATE.user = { 
+            name: defaultUser.name, 
+            username: defaultUser.username, 
+            role: defaultUser.role 
+          };
+          completeLogin();
+          return;
+        }
+        // Both failed
+        $('loading-overlay').classList.add('hidden');
+        $('login-view').classList.remove('hidden');
+        toast('❌ Invalid username or PIN', 'err');
+      })
+      .catch(err => {
+        // If fetch fails, try default users
+        const defaultUser = DEFAULT_USERS.find(u => u.username === username && u.pin === pin);
+        if (defaultUser) {
+          STATE.user = { 
+            name: defaultUser.name, 
+            username: defaultUser.username, 
+            role: defaultUser.role 
+          };
+          completeLogin();
+          return;
+        }
+        $('loading-overlay').classList.add('hidden');
+        $('login-view').classList.remove('hidden');
+        toast('⚠️ ' + err.message, 'err');
+      });
+  }
+
+  function completeLogin() {
+    setLoadStep(1, 'Loading delivery data…');
+    loadData(() => {
+      setLoadStep(2, 'Building dashboard…');
+      setTimeout(() => {
+        setLoadStep(3, 'Ready!');
+        setTimeout(() => {
+          $('loading-overlay').classList.add('hidden');
+          $('app-view').classList.remove('hidden');
+          const roleInfo = ROLES[STATE.user.role] || { icon: '👁️' };
+          $('uName').textContent = STATE.user.name;
+          $('uRole').textContent = (roleInfo.icon || '👁️') + ' ' + STATE.user.role;
+          buildNav();
+          showPage('overview');
+        }, 250);
+      }, 250);
+    });
+  }
+
+  function logout() {
+    if (!confirm('Log out?')) return;
+    STATE.user = null;
+    $('app-view').classList.add('hidden');
+    $('login-view').classList.remove('hidden');
+    $('loginPw').value = '';
+    $('loginUser').value = '';
+    populateLoginDropdown();
+  }
+
+  function setLoadStep(idx, msg) {
+    $('loadSub').textContent = msg;
+    for (let i = 0; i < 4; i++) {
+      const el = $('ls' + i);
+      el.className = 'loader-step' + (i < idx ? ' done' : i === idx ? ' active' : '');
+    }
+  }
+
+  // ─── NAV ───
+  function buildNav() {
+    const roleInfo = ROLES[STATE.user.role] || {};
+    $('navItems').innerHTML = NAV
+      .filter(n => (!n.requiresEdit || roleInfo.canEdit) && (!n.requiresUserAdmin || roleInfo.canManageUsers))
+      .map(n => `<div class="nav-item" data-page="${n.id}" onclick="showPage('${n.id}')"><span>${n.icon}</span><span>${n.label}</span></div>`)
+      .join('');
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    $('page-' + id).classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+    closeDrawer();
+    if (id === 'users') renderUsers();
+    if (id === 'reports' && STATE.data) renderReports(STATE.data);
+  }
+
+  function toggleDrawer() { $('mainSidebar').classList.toggle('open'); $('sidebarOverlay').classList.toggle('active'); }
+  function closeDrawer() { $('mainSidebar').classList.remove('open'); $('sidebarOverlay').classList.remove('active'); }
+
+  // ─── DATA LOADING ───
+  function loadData(cb) {
+    fetch(API_URL + '?action=loadData')
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok === false) {
+          toast('⚠️ Server error: ' + (data.error || 'Unknown error'), 'err');
+          if (cb) cb();
+          return;
+        }
+        STATE.data = data;
+        renderAll();
+        if (cb) cb();
+      })
+      .catch(err => {
+        toast('⚠️ Could not load data: ' + err.message, 'err');
+        if (cb) cb();
+      });
+  }
+
+  function renderAll() {
+    const d = STATE.data;
+    if (!d) return;
+    renderOverview(d);
+    renderReports(d);
+    renderSections(d.sections || []);
+    renderRoutesPage(d.sections || []);
+    renderRouteOptions(d.routeOptions || []);
+    renderAssignments(d.assignments || []);
+  }
+
+  function esc(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ─── OVERVIEW ───
+  function renderOverview(d) {
+    const o = d.overall || { totalResponses: 0, totalRoutes: 0, avgRating: null, totalRidersAssigned: 0 };
+    $('ov-stats').innerHTML = [
+      ['Total Responses', o.totalResponses],
+      ['Routes Covered', o.totalRoutes],
+      ['Avg Rating', o.avgRating !== null ? o.avgRating + ' / 5' : '—'],
+      ['Riders Assigned', o.totalRidersAssigned]
+    ].map(([label, num]) => `<div class="stat-card"><div class="num">${num}</div><div class="label">${label}</div></div>`).join('');
+
+    const sections = d.sections || [];
+    if (!sections.length) {
+      $('ov-recent').innerHTML = '<div class="empty-state">No responses yet. Once customers scan the QR code and submit feedback, it will show up here.</div>';
+      return;
+    }
+    const recent = sections[0];
+    $('ov-recent').innerHTML = `
+      <div class="text-sm">${recent.dateLabel} — ${recent.totalResponses} response(s), avg rating ${recent.avgRating !== null ? recent.avgRating : '—'}</div>
+      ${(recent.routes || []).slice(0,5).map(r => `<div class="text-xs text-muted" style="margin-top:6px;">📍 ${esc(r.route)} — ${r.count} response(s) — avg ${r.avgRating !== null ? r.avgRating : '—'}</div>`).join('')}
+    `;
+  }
+
+  // ─── REPORTS ───
+  function renderReports(d) {
+    if (!$('page-reports')) return;
+    const sections = d.sections || [];
+
+    const chrono = sections.slice().reverse();
+    const labels = chrono.map(s => s.dateLabel);
+    const ratings = chrono.map(s => s.avgRating);
+    const volumes = chrono.map(s => s.totalResponses);
+
+    let ratingDelta = null, volDelta = null;
+    if (chrono.length >= 2) {
+      const last = chrono[chrono.length-1], prev = chrono[chrono.length-2];
+      if (last.avgRating !== null && prev.avgRating !== null) ratingDelta = Math.round((last.avgRating - prev.avgRating) * 10) / 10;
+      volDelta = last.totalResponses - prev.totalResponses;
+    }
+    $('rep-stats').innerHTML = [
+      ['Days Tracked', chrono.length],
+      ['Latest Avg Rating', chrono.length ? (chrono[chrono.length-1].avgRating ?? '—') : '—'],
+      ['Rating vs Prior Day', ratingDelta === null ? '—' : (ratingDelta > 0 ? '+' : '') + ratingDelta],
+      ['Responses vs Prior Day', volDelta === null ? '—' : (volDelta > 0 ? '+' : '') + volDelta]
+    ].map(([label, num]) => `<div class="stat-card"><div class="num">${num}</div><div class="label">${label}</div></div>`).join('');
+
+    if (typeof Chart === 'undefined' || !sections.length) return;
+
+    const agg = {};
+    sections.forEach(s => (s.routes || []).forEach(r => {
+      if (!agg[r.route]) agg[r.route] = { route:r.route, count:0, onTimeSum:0, courteousSum:0 };
+      const a = agg[r.route];
+      a.count += r.count;
+      if (r.onTimePct !== null) a.onTimeSum += r.onTimePct * r.count;
+      if (r.courteousPct !== null) a.courteousSum += r.courteousPct * r.count;
+    }));
+    const routeList = Object.values(agg).sort((a,b) => b.count - a.count).slice(0, 8);
+
+    const chartOpts = {
+      plugins:{ legend:{ labels:{ color:'#b0c8f0' } } },
+      scales:{
+        x:{ ticks:{ color:'#b0c8f0' }, grid:{ color:'rgba(255,255,255,.08)' } },
+        y:{ ticks:{ color:'#b0c8f0' }, grid:{ color:'rgba(255,255,255,.08)' } }
+      }
+    };
+
+    Object.values(STATE.charts).forEach(c => c && c.destroy());
+
+    STATE.charts.rating = new Chart($('chartRating'), {
+      type:'line',
+      data:{ labels, datasets:[{ label:'Avg Rating', data:ratings, borderColor:'#22d3ee', backgroundColor:'rgba(34,211,238,.15)', tension:.3, fill:true, spanGaps:true }] },
+      options:{ ...chartOpts, scales:{ ...chartOpts.scales, y:{ ...chartOpts.scales.y, min:0, max:5 } } }
+    });
+
+    STATE.charts.volume = new Chart($('chartVolume'), {
+      type:'bar',
+      data:{ labels, datasets:[{ label:'Responses', data:volumes, backgroundColor:'#f59e0b' }] },
+      options: chartOpts
+    });
+
+    STATE.charts.onTime = new Chart($('chartOnTime'), {
+      type:'bar',
+      data:{
+        labels: routeList.map(r => r.route),
+        datasets:[
+          { label:'On-Time %', data: routeList.map(r => r.count ? Math.round(r.onTimeSum/r.count) : 0), backgroundColor:'#34d399' },
+          { label:'Courteous %', data: routeList.map(r => r.count ? Math.round(r.courteousSum/r.count) : 0), backgroundColor:'#a78bfa' }
+        ]
+      },
+      options: chartOpts
+    });
+  }
+
+  // ─── FEEDBACK BY DATE ───
+  function renderSections(sections) {
+    const el = $('sections');
+    if (!sections.length) {
+      el.innerHTML = '<div class="empty-state">No responses yet.</div>';
+      return;
+    }
+    el.innerHTML = sections.map((s, idx) => `
+      <div class="date-section${idx===0 ? ' open':''}" id="sec-${idx}">
+        <div class="date-header" onclick="toggleSection(${idx})">
+          <div>
+            <div class="title">${s.dateLabel}</div>
+            <div class="sub">${s.totalResponses} response(s) · avg rating ${s.avgRating !== null ? s.avgRating : '—'}</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="date-body">
+          ${(s.routes || []).map(r => routeCardHtml(r, s.dateKey)).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function routeCardHtml(r, dateKey) {
+    const chips = (r.riders || []).length
+      ? (r.riders || []).map(n => `<span class="chip chip-green">${esc(n)}</span>`).join('')
+      : '<span class="chip chip-red">No rider assigned</span>';
+    const tableId = 'tbl-' + dateKey + '-' + r.route.replace(/[^a-z0-9]/gi,'');
+    return `
+      <div class="route-card">
+        <div class="route-top">
+          <div>
+            <div class="route-name">📍 ${esc(r.route)}</div>
+            <div>${chips}</div>
+          </div>
+          <div class="text-xs text-muted">${r.count} response(s)</div>
+        </div>
+        <div class="metrics">
+          <div>Avg rating: <b>${r.avgRating !== null ? r.avgRating + '/5' : '—'}</b></div>
+          <div>On-time: <b>${r.onTimePct !== null ? r.onTimePct + '%' : '—'}</b></div>
+          <div>Courteous: <b>${r.courteousPct !== null ? r.courteousPct + '%' : '—'}</b></div>
+          <div>Contacted before: <b>${r.contactedBeforePct !== null ? r.contactedBeforePct + '%' : '—'}</b></div>
+          ${r.wantsContactCount > 0 ? `<div style="color:var(--orange);">⚠ ${r.wantsContactCount} want follow-up</div>` : ''}
+        </div>
+        <span class="toggle-link" onclick="toggleTable('${tableId}')">View individual responses ▾</span>
+        <table class="hidden-table" id="${tableId}">
+          <thead><tr><th>Time</th><th>Location</th><th>Rating</th><th>On Time</th><th>Courteous</th><th>Contacted Before</th><th>Follow-up</th></tr></thead>
+          <tbody>
+            ${(r.responses || []).map(x => `
+              <tr>
+                <td>${esc(x.time)}</td>
+                <td>${esc(x.locationType)}</td>
+                <td>${x.rating !== null ? x.rating : '—'}</td>
+                <td>${esc(x.onTime)}</td>
+                <td>${esc(x.courteous)}</td>
+                <td>${esc(x.contactedBefore)}</td>
+                <td>${x.wantsContact ? esc(x.wantsContact) : '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function toggleSection(idx) { $('sec-' + idx).classList.toggle('open'); }
+  function toggleTable(id) { $(id).classList.toggle('hidden-table'); }
+
+  // ─── ROUTES PAGE ───
+  function renderRoutesPage(sections) {
+    const agg = {};
+    sections.forEach(s => (s.routes || []).forEach(r => {
+      if (!agg[r.route]) agg[r.route] = { route:r.route, count:0, ratingSum:0, ratingN:0, onTimeSum:0, courteousSum:0, riders:new Set() };
+      const a = agg[r.route];
+      a.count += r.count;
+      if (r.avgRating !== null) { a.ratingSum += r.avgRating * r.count; a.ratingN += r.count; }
+      if (r.onTimePct !== null) a.onTimeSum += r.onTimePct * r.count;
+      if (r.courteousPct !== null) a.courteousSum += r.courteousPct * r.count;
+      (r.riders || []).forEach(n => a.riders.add(n));
+    }));
+    const list = Object.values(agg).sort((a,b) => b.count - a.count);
+    if (!list.length) { $('routes-list').innerHTML = '<div class="empty-state">No routes yet.</div>'; return; }
+    $('routes-list').innerHTML = list.map(a => `
+      <div class="card">
+        <div class="flex justify-between items-center">
+          <div class="font-bold">📍 ${esc(a.route)}</div>
+          <div class="text-xs text-muted">${a.count} response(s)</div>
+        </div>
+        <div class="metrics">
+          <div>Avg rating: <b>${a.ratingN ? Math.round(a.ratingSum/a.ratingN*10)/10 : '—'}</b></div>
+          <div>On-time: <b>${a.count ? Math.round(a.onTimeSum/a.count) + '%' : '—'}</b></div>
+          <div>Courteous: <b>${a.count ? Math.round(a.courteousSum/a.count) + '%' : '—'}</b></div>
+        </div>
+        <div style="margin-top:8px;">${a.riders.size ? Array.from(a.riders).map(n=>`<span class="chip chip-green">${esc(n)}</span>`).join('') : '<span class="chip chip-red">No riders on record</span>'}</div>
+      </div>
+    `).join('');
+  }
+
+  // ─── RIDER ASSIGNMENTS ───
+  function renderRouteOptions(routes) {
+    $('route-options').innerHTML = routes.map(r => `<option value="${esc(r)}">`).join('');
+  }
+
+  function renderAssignments(list) {
+    if (!list || !list.length) {
+      $('assign-tbody').innerHTML = '<tr><td colspan="5" class="text-muted">No rider assignments yet.</td></tr>';
+      return;
+    }
+    $('assign-tbody').innerHTML = list.slice().reverse().map(a => `
+      <tr>
+        <td>${esc(a.dateKey)}</td>
+        <td>${esc(a.route)}</td>
+        <td>${esc(a.riderName)}</td>
+        <td>${esc(a.notes)}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="removeAssignment(${a.rowIndex})">Remove</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function submitAssignment() {
+    const roleInfo = ROLES[STATE.user.role] || {};
+    if (!roleInfo.canEdit) { toast('Your role does not have edit access', 'err'); return; }
+    
+    const date = $('a-date').value;
+    const route = $('a-route').value.trim();
+    const rider = $('a-rider').value.trim();
+    const notes = $('a-notes').value.trim();
+    if (!date || !route || !rider) { toast('Fill in date, route, and rider name', 'warn'); return; }
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action:'addRider', date, route, riderName:rider, notes })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+        toast('✅ Rider assignment saved');
+        $('a-route').value = ''; $('a-rider').value = ''; $('a-notes').value = '';
+        loadData();
+      })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function removeAssignment(rowIndex) {
+    const roleInfo = ROLES[STATE.user.role] || {};
+    if (!roleInfo.canEdit) { toast('Your role does not have edit access', 'err'); return; }
+    if (!confirm('Remove this assignment?')) return;
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'deleteRider', rowIndex }) })
+      .then(r => r.json())
+      .then(res => { if (res.ok) { toast('🗑️ Removed'); loadData(); } else { toast('Error: ' + res.error, 'err'); } })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  // ─── USERS ───
+  function renderUsers() {
+    fetch(API_URL + '?action=listUsers')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+        STATE.users = res.users || [];
+        $('users-tbody').innerHTML = STATE.users.map(u => `
+          <tr>
+            <td>${esc(u.name)}</td>
+            <td>${esc(u.username)}</td>
+            <td>${(ROLES[u.role]||{}).icon || ''} ${esc(u.role)}</td>
+            <td>${u.active ? '<span class="chip chip-green">Active</span>' : '<span class="chip chip-red">Deactivated</span>'}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm" onclick="toggleUserActive('${esc(u.username)}')">${u.active ? 'Deactivate' : 'Reactivate'}</button>
+              <button class="btn btn-ghost btn-sm" onclick="deleteUserRow('${esc(u.username)}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function createUser() {
+    const name = $('u-name').value.trim();
+    const username = $('u-username').value.trim();
+    const role = $('u-role').value;
+    const pin = $('u-pin').value.trim();
+    if (!name || !username || !pin) { toast('Fill in name, username, and PIN', 'warn'); return; }
+    if (!/^\d{4,8}$/.test(pin)) { toast('PIN must be 4-8 digits', 'warn'); return; }
+
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'createUser', name, username, role, pin }) })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+        toast('✅ Login created for ' + name);
+        $('u-name').value = ''; $('u-username').value = ''; $('u-pin').value = '';
+        renderUsers();
+      })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function toggleUserActive(username) {
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'toggleUser', username }) })
+      .then(r => r.json())
+      .then(res => { if (res.ok) renderUsers(); else toast('Error: ' + res.error, 'err'); })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function deleteUserRow(username) {
+    if (!confirm('Delete this login? This cannot be undone.')) return;
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'deleteUser', username }) })
+      .then(r => r.json())
+      .then(res => { if (res.ok) renderUsers(); else toast('Error: ' + res.error, 'err'); })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  // ─── EXPORT ───
+  function exportCSV() {
+    const d = STATE.data;
+    if (!d || !d.sections || !d.sections.length) { toast('No data to export', 'warn'); return; }
+    const headers = ['Date','Route','Rider(s)','Time','Location Type','Rating','On Time','Courteous','Contacted Before','Wants Follow-up'];
+    const rows = [headers];
+    d.sections.forEach(s => (s.routes || []).forEach(r => (r.responses || []).forEach(x => {
+      rows.push([s.dateKey, r.route, (r.riders || []).join('; '), x.time, x.locationType, x.rating, x.onTime, x.courteous, x.contactedBefore, x.wantsContact || '']);
+    })));
+    const csv = rows.map(r => r.map(v => `"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'Delivery_Feedback_Export.csv';
+    a.click();
+    toast('CSV exported');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !$('login-view').classList.contains('hidden')) doLogin();
+  });
+
+  $('loading-overlay').classList.add('hidden');
+  populateLoginDropdown();
+</script>
+</body>
+</html>

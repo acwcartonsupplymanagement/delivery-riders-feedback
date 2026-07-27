@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<title>🚚 Delivery Monitor – Ghana Post Accra West</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, -apple-system, sans-serif; }
+  :root {
+    --bg:#071a33; --bg2:#132c5c; --bg3:#0e2347;
+    --card: rgba(255,255,255,0.06); --card-hi: rgba(255,255,255,0.1); --border: rgba(255,255,255,0.14); --border-hi: rgba(255,255,255,0.28);
+    --text:#f2f5ff; --muted:#9fb6e8;
+    --blue:#2e7bff; --blue2:#0a4bb5;
+    --cyan:#22d3ee; --purple:#a78bfa; --pink:#f472b6;
+    --amber:#ffb020; --orange:#f59e0b; --green:#34d399; --red:#f87171; --white:#fff;
+    --radius:20px; --transition:.35s cubic-bezier(.22,1,.36,1); --sidebar-w:264px;
+    --font-display:'Sora', 'Inter', sans-serif; --font-mono:'JetBrains Mono', monospace;
+    --glow-blue: 0 0 0 rgba(46,123,255,0); --shadow-lift: 0 18px 40px -14px rgba(0,0,0,.55);
+  }
+  html { font-size:15px; }
+  body {
+    background:
+      radial-gradient(ellipse 900px 500px at 8% -10%, rgba(46,123,255,.35), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 105% 10%, rgba(255,176,32,.14), transparent 55%),
+      radial-gradient(ellipse 800px 600px at 50% 115%, rgba(34,211,238,.12), transparent 60%),
+      linear-gradient(160deg, var(--bg) 0%, var(--bg3) 55%, var(--bg) 100%);
+    background-attachment:fixed;
+    color:var(--text); min-height:100vh; overflow:hidden; display:flex; flex-direction:column;
+    animation:bgDrift 22s ease-in-out infinite alternate;
+  }
+  @keyframes bgDrift {
+    0% { background-position:0% 0%, 100% 0%, 50% 100%, 0 0; }
+    100% { background-position:4% 6%, 96% 4%, 54% 94%, 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body { animation:none; }
+    * { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--orange); border-radius:10px; }
+  .hidden { display:none !important; }
+  .flex { display:flex; } .flex-col { flex-direction:column; }
+  .items-center { align-items:center; } .justify-between { justify-content:space-between; }
+  .gap-2{gap:8px;} .gap-3{gap:12px;} .gap-4{gap:16px;} .flex-wrap{flex-wrap:wrap;}
+  .text-center{text-align:center;} .text-muted{color:var(--muted);}
+  .text-sm{font-size:.78rem;} .text-xs{font-size:.68rem;} .font-bold{font-weight:700;}
+
+  .btn { padding:9px 22px; border-radius:40px; border:none; font-weight:600; font-size:.78rem; cursor:pointer;
+    transition:var(--transition); display:inline-flex; align-items:center; gap:6px; position:relative; overflow:hidden;
+    background:var(--card); color:var(--text); border:1px solid var(--border); backdrop-filter:blur(8px); letter-spacing:.02em; }
+  .btn::after { content:''; position:absolute; inset:0; border-radius:inherit; opacity:0; transition:opacity .25s;
+    background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.35), transparent 70%); }
+  .btn:hover { transform:translateY(-2px) scale(1.02); filter:brightness(1.15); box-shadow:0 10px 30px rgba(46,123,255,.35); }
+  .btn:hover::after { opacity:1; }
+  .btn:active { transform:translateY(0) scale(.97); }
+  .btn-primary { background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff; border:none; box-shadow:0 6px 20px rgba(46,123,255,.3); }
+  .btn-success { background:linear-gradient(135deg,var(--green),#0d9488); color:#fff; border:none; box-shadow:0 6px 20px rgba(52,211,153,.25); }
+  .btn-danger { background:linear-gradient(135deg,var(--red),#dc2626); color:#fff; border:none; }
+  .btn-orange { background:linear-gradient(135deg,var(--amber),#d97706); color:#0a1a33; border:none; box-shadow:0 6px 20px rgba(255,176,32,.3); }
+  .btn-ghost { background:rgba(255,255,255,.06); border:1px solid var(--border); }
+  .btn-sm { padding:5px 14px; font-size:.7rem; }
+  .btn-full { width:100%; justify-content:center; }
+
+  input, select, textarea {
+    background:rgba(255,255,255,.06); border:1.5px solid var(--border); border-radius:12px;
+    padding:10px 14px; color:var(--text); font-size:.85rem; width:100%; transition:var(--transition); outline:none;
+  }
+  input:focus, select:focus, textarea:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(245,158,11,.15); transform:translateY(-1px); }
+  input::placeholder { color:var(--muted); opacity:.5; }
+  label { font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:4px; }
+  select option { background:#1a3f7a; color:#f0f4ff; }
+  h1,h2,h3,.page-title,.logo,.route-name,.date-header .title,.login-card h1 { font-family:var(--font-display); }
+
+  #login-view {
+    flex:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  }
+  #login-view::before, #login-view::after {
+    content:''; position:absolute; width:340px; height:340px; border-radius:50%; filter:blur(60px); opacity:.35; pointer-events:none;
+  }
+  #login-view::before { background:var(--blue); top:-100px; left:-80px; animation:floatBlob 9s ease-in-out infinite; }
+  #login-view::after { background:var(--amber); bottom:-120px; right:-80px; animation:floatBlob 11s ease-in-out infinite reverse; }
+  @keyframes floatBlob { 0%,100% { transform:translate(0,0) scale(1); } 50% { transform:translate(30px,-20px) scale(1.15); } }
+  .login-card {
+    background:var(--card); border:1px solid var(--border); border-radius:26px; padding:38px 34px;
+    width:340px; backdrop-filter:blur(16px); box-shadow:var(--shadow-lift), inset 0 1px 0 rgba(255,255,255,.08);
+    position:relative; z-index:2; animation:cardRise .6s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes cardRise { from { opacity:0; transform:translateY(24px) scale(.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+  .login-card .stamp { width:52px; height:52px; margin:0 auto 14px; border-radius:50%;
+    background:conic-gradient(from 0deg, var(--amber), var(--pink), var(--cyan), var(--blue), var(--amber));
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem; animation:spinSlow 6s linear infinite;
+    box-shadow:0 0 30px rgba(255,176,32,.35); }
+  .login-card .stamp span { display:inline-block; animation:counterSpin 6s linear infinite; }
+  @keyframes spinSlow { to { transform:rotate(360deg); } }
+  @keyframes counterSpin { to { transform:rotate(-360deg); } }
+  .login-card h1 { font-size:1.35rem; margin-bottom:4px; font-weight:700; letter-spacing:-.01em; text-align:center; }
+  .login-card .sub { color:var(--muted); font-size:.8rem; margin-bottom:22px; text-align:center; }
+  .login-card label { margin-top:14px; }
+
+  #loading-overlay {
+    position:fixed; inset:0; z-index:999; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:18px;
+    background:
+      radial-gradient(ellipse 700px 500px at 50% 30%, rgba(46,123,255,.25), transparent 60%),
+      linear-gradient(160deg, var(--bg) 0%, var(--bg3) 60%, var(--bg) 100%);
+  }
+  .loader-parcel { font-size:2.4rem; animation:parcelBounce 1.1s ease-in-out infinite; filter:drop-shadow(0 8px 18px rgba(255,176,32,.4)); }
+  @keyframes parcelBounce { 0%,100% { transform:translateY(0) rotate(-4deg); } 50% { transform:translateY(-14px) rotate(4deg); } }
+  .loader-ring { width:56px; height:56px; border-radius:50%; border:4px solid rgba(255,255,255,.15); border-top-color:var(--orange); animation:spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  #loadSub { color:var(--muted); font-size:.85rem; letter-spacing:.02em; }
+  .loader-steps { display:flex; gap:8px; }
+  .loader-step { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.2); transition:var(--transition); }
+  .loader-step.active { background:var(--orange); box-shadow:0 0 12px var(--orange); transform:scale(1.3); }
+  .loader-step.done { background:var(--green); }
+
+  #app-view { flex:1; display:flex; overflow:hidden; }
+  #mainSidebar {
+    width:var(--sidebar-w); background:linear-gradient(180deg, var(--bg2), var(--bg3)); flex-shrink:0; display:flex; flex-direction:column;
+    border-right:1px solid var(--border); transition:var(--transition); position:relative; z-index:10;
+    box-shadow:8px 0 30px -12px rgba(0,0,0,.4);
+  }
+  .sidebar-header { padding:22px 20px; border-bottom:1px solid var(--border); }
+  .sidebar-header .logo { font-size:1.08rem; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .sidebar-header .logo .truck { display:inline-block; animation:drive 3.5s ease-in-out infinite; }
+  @keyframes drive { 0%,100% { transform:translateX(0); } 50% { transform:translateX(4px); } }
+  .sidebar-header .loc { font-size:.72rem; color:var(--muted); margin-top:3px; letter-spacing:.03em; }
+  .nav-item {
+    padding:12px 20px; display:flex; align-items:center; gap:10px; cursor:pointer; font-size:.85rem;
+    color:var(--muted); border-left:3px solid transparent; transition:var(--transition); position:relative;
+  }
+  .nav-item:hover { background:rgba(255,255,255,.05); color:var(--text); padding-left:24px; }
+  .nav-item.active { background:linear-gradient(90deg, rgba(46,123,255,.22), rgba(46,123,255,.02)); color:#fff; border-left:3px solid var(--amber); font-weight:600; }
+  .sidebar-footer { margin-top:auto; padding:16px 20px; border-top:1px solid var(--border); font-size:.72rem; color:var(--muted); }
+
+  #main-content { flex:1; overflow-y:auto; padding:26px 32px 60px; }
+  .page { animation:pageIn .45s cubic-bezier(.22,1,.36,1); }
+  @keyframes pageIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .page-title { font-size:1.4rem; font-weight:700; margin-bottom:2px; letter-spacing:-.01em; }
+  .page-sub { color:var(--muted); font-size:.82rem; margin-bottom:22px; }
+
+  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px;
+    transition:var(--transition); position:relative; overflow:hidden; animation:fadeSlideUp .5s cubic-bezier(.22,1,.36,1) backwards;
+  }
+  .stat-card:nth-child(1){animation-delay:.03s;} .stat-card:nth-child(2){animation-delay:.09s;}
+  .stat-card:nth-child(3){animation-delay:.15s;} .stat-card:nth-child(4){animation-delay:.21s;}
+  .stat-card::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity .3s;
+    background:radial-gradient(circle at 20% 0%, rgba(46,123,255,.25), transparent 65%); }
+  .stat-card:hover { transform:translateY(-4px); border-color:var(--border-hi); box-shadow:var(--shadow-lift); }
+  .stat-card:hover::before { opacity:1; }
+  .stat-card .num { font-size:1.85rem; font-weight:700; font-family:var(--font-mono); position:relative; }
+  .stat-card .label { font-size:.72rem; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:.05em; position:relative; }
+
+  .card {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px;
+    backdrop-filter:blur(10px); transition:var(--transition);
+  }
+
+  @keyframes fadeSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  .date-section { border:1px solid var(--border); border-radius:16px; margin-bottom:12px; overflow:hidden; background:rgba(255,255,255,.015);
+    animation:fadeSlideUp .5s cubic-bezier(.22,1,.36,1) backwards; }
+  .date-header { padding:14px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,.03); transition:var(--transition); }
+  .date-header:hover { background:rgba(255,255,255,.07); }
+  .date-header .title { font-weight:700; font-size:.94rem; }
+  .date-header .sub { font-size:.72rem; color:var(--muted); margin-top:2px; }
+  .chevron { transition:var(--transition); color:var(--amber); }
+  .date-section.open .chevron { transform:rotate(90deg); }
+  .date-body { display:none; padding:4px 18px 16px; }
+  .date-section.open .date-body { display:block; animation:fadeSlideUp .35s cubic-bezier(.22,1,.36,1); }
+
+  .route-card {
+    border:1px solid var(--border); border-radius:14px; padding:14px; margin-top:10px; background:rgba(255,255,255,.025);
+    transition:var(--transition); position:relative;
+  }
+  .route-card:hover { border-color:var(--border-hi); background:rgba(255,255,255,.045); transform:translateY(-2px); box-shadow:0 12px 30px -14px rgba(0,0,0,.5); }
+  .route-top { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; }
+  .route-name { font-weight:700; font-size:.92rem; }
+  .chip { display:inline-block; border-radius:20px; padding:2px 10px; font-size:.68rem; margin-right:4px; margin-top:6px; border:1px solid transparent; transition:var(--transition); }
+  .chip-green { background:rgba(52,211,153,.15); color:var(--green); border-color:rgba(52,211,153,.25); }
+  .chip-red { background:rgba(248,113,113,.15); color:var(--red); border-color:rgba(248,113,113,.25); }
+  .chip-blue { background:rgba(46,123,255,.15); color:#8fb4ff; border-color:rgba(46,123,255,.3); }
+  .metrics { display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:.75rem; color:var(--muted); }
+  .metrics b { color:var(--text); font-family:var(--font-mono); }
+  .toggle-link { font-size:.72rem; color:var(--cyan); cursor:pointer; margin-top:8px; display:inline-block; transition:var(--transition); }
+  .toggle-link:hover { color:#fff; text-shadow:0 0 12px var(--cyan); }
+
+  /* ─── Star rating ─── */
+  .stars { display:inline-flex; gap:1px; vertical-align:middle; }
+  .stars .star { font-size:.85rem; color:rgba(255,255,255,.18); }
+  .stars .star.filled { color:var(--amber); text-shadow:0 0 8px rgba(255,176,32,.6); animation:starPop .35s cubic-bezier(.34,1.56,.64,1) backwards; }
+  .stars.lg .star { font-size:1.15rem; }
+  @keyframes starPop { from { transform:scale(0) rotate(-30deg); opacity:0; } to { transform:scale(1) rotate(0); opacity:1; } }
+
+  /* ─── Response cards (replaces the raw table) ─── */
+  .resp-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:10px; margin-top:10px; }
+  .resp-card {
+    border:1px solid var(--border); border-radius:12px; padding:12px 14px; background:rgba(255,255,255,.035);
+    position:relative; overflow:hidden; transition:var(--transition);
+    animation:respIn .45s cubic-bezier(.22,1,.36,1) backwards;
+  }
+  .resp-card:hover { border-color:var(--border-hi); background:rgba(255,255,255,.06); transform:translateY(-3px); box-shadow:0 14px 28px -14px rgba(0,0,0,.55); }
+  .resp-card::before {
+    content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.12), transparent);
+    animation:scanSweep 1.1s ease-out forwards; animation-delay:inherit;
+  }
+  @keyframes scanSweep { to { left:130%; } }
+  @keyframes respIn { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+  .resp-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .resp-time { font-family:var(--font-mono); font-size:.72rem; color:var(--muted); }
+  .resp-loc { font-size:.68rem; color:var(--muted); margin-bottom:8px; }
+  .resp-badges { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .badge { font-size:.64rem; padding:2px 8px; border-radius:20px; display:inline-flex; align-items:center; gap:3px; font-weight:600; }
+  .badge-yes { background:rgba(52,211,153,.14); color:var(--green); }
+  .badge-no { background:rgba(248,113,113,.14); color:var(--red); }
+  .badge-unknown { background:rgba(255,255,255,.08); color:var(--muted); }
+  .resp-note {
+    margin-top:9px; padding:8px 10px; border-radius:10px; background:rgba(255,176,32,.09);
+    border:1px dashed rgba(255,176,32,.35); font-size:.72rem; color:#ffd68a; line-height:1.4;
+  }
+
+  .hidden-table { display:none !important; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; font-size:.75rem; }
+  th, td { border-bottom:1px solid var(--border); padding:9px 8px; text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:.68rem; text-transform:uppercase; letter-spacing:.04em; }
+  tbody tr { transition:var(--transition); }
+  tbody tr:hover { background:rgba(255,255,255,.04); }
+
+  .empty-state { padding:40px; text-align:center; color:var(--muted); }
+
+  #toast-wrap { position:fixed; bottom:20px; right:20px; z-index:1000; display:flex; flex-direction:column; gap:8px; }
+  .toast { background:rgba(19,44,92,.9); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:12px; padding:12px 18px; font-size:.8rem; box-shadow:0 12px 32px rgba(0,0,0,.45); animation:slideIn .35s cubic-bezier(.22,1,.36,1), fadeOut .3s ease 3.1s forwards; }
+  .toast.ok { border-left:4px solid var(--green); }
+  .toast.warn { border-left:4px solid var(--orange); }
+  .toast.err { border-left:4px solid var(--red); }
+  @keyframes slideIn { from { transform:translateX(50px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+  @keyframes fadeOut { to { opacity:0; transform:translateX(30px); } }
+
+  .hamburger { display:none; }
+  @media (max-width:800px) {
+    #mainSidebar { position:fixed; left:-280px; top:0; bottom:0; z-index:200; }
+    #mainSidebar.open { left:0; }
+    .hamburger { display:flex; }
+    #main-content { padding:20px 16px 60px; }
+    #sidebarOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:150; }
+    #sidebarOverlay.active { display:block; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="loading-overlay">
+    <div class="loader-parcel">📦</div>
+    <div class="loader-ring"></div>
+    <div id="loadSub">Connecting…</div>
+    <div class="loader-steps">
+      <div class="loader-step" id="ls0"></div>
+      <div class="loader-step" id="ls1"></div>
+      <div class="loader-step" id="ls2"></div>
+      <div class="loader-step" id="ls3"></div>
+    </div>
+  </div>
+
+  <div id="login-view">
+    <div class="login-card">
+      <div class="stamp"><span>🚚</span></div>
+      <h1>Delivery Monitor</h1>
+      <div class="sub">Ghana Post · Accra West Region</div>
+      <label>Select Your Role</label>
+      <select id="loginUser">
+        <option value="">Select your role…</option>
+      </select>
+      <label style="margin-top:12px;">PIN</label>
+      <input type="password" id="loginPw" placeholder="Enter PIN" maxlength="8" autocomplete="current-password">
+      <button class="btn btn-primary btn-full" style="margin-top:20px;" onclick="doLogin()">Sign In</button>
+      <div class="text-xs text-muted" style="margin-top:14px;">Default PIN: <b>1234</b></div>
+    </div>
+  </div>
+
+  <div id="app-view" class="hidden">
+    <div id="sidebarOverlay" onclick="closeDrawer()"></div>
+    <div id="mainSidebar">
+      <div class="sidebar-header">
+        <div class="logo"><span class="truck">🚚</span> Delivery Monitor</div>
+        <div class="loc">Accra West Region</div>
+      </div>
+      <div id="navItems"></div>
+      <div class="sidebar-footer">
+        <div id="uName" class="font-bold text-sm" style="color:#fff;"></div>
+        <div id="uRole" class="text-xs text-muted" style="margin-top:2px;"></div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;" onclick="logout()">Log Out</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="main-content">
+      <div class="flex items-center gap-3" style="margin-bottom:10px;">
+        <button class="hamburger btn btn-ghost btn-sm" onclick="toggleDrawer()">☰</button>
+      </div>
+
+      <div id="page-overview" class="page">
+        <div class="page-title">Overview</div>
+        <div class="page-sub">Live snapshot of all delivery feedback</div>
+        <div class="stat-grid" id="ov-stats"></div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">Most Recent Day</div>
+          <div id="ov-recent"></div>
+        </div>
+      </div>
+
+      <div id="page-reports" class="page hidden">
+        <div class="page-title">Reports &amp; Analytics</div>
+        <div class="page-sub">Trends across all recorded delivery days</div>
+        <div class="stat-grid" id="rep-stats"></div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">Average Rating Over Time</div>
+          <canvas id="chartRating" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">Response Volume Over Time</div>
+          <canvas id="chartVolume" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="font-bold" style="margin-bottom:10px;">On-Time % by Route (Top 8)</div>
+          <canvas id="chartOnTime" height="160"></canvas>
+        </div>
+      </div>
+
+      <div id="page-feedback" class="page hidden">
+        <div class="page-title">Feedback by Date</div>
+        <div class="page-sub">Every response, grouped by day and route</div>
+        <div id="sections"></div>
+      </div>
+
+      <div id="page-routes" class="page hidden">
+        <div class="page-title">Routes</div>
+        <div class="page-sub">Aggregate performance per route, across all dates</div>
+        <div id="routes-list"></div>
+      </div>
+
+      <div id="page-riders" class="page hidden">
+        <div class="page-title">Rider Assignments</div>
+        <div class="page-sub">Record which rider covered which route each day</div>
+        <div class="card" style="max-width:480px;">
+          <label>Date</label>
+          <input type="date" id="a-date">
+          <label style="margin-top:12px;">Route / Area</label>
+          <input type="text" id="a-route" list="route-options" placeholder="e.g. Dansoman">
+          <datalist id="route-options"></datalist>
+          <label style="margin-top:12px;">Rider Name</label>
+          <input type="text" id="a-rider" placeholder="e.g. Kwame Owusu">
+          <label style="margin-top:12px;">Notes (optional)</label>
+          <input type="text" id="a-notes" placeholder="e.g. covering for Ama">
+          <button class="btn btn-success btn-full" style="margin-top:16px;" onclick="submitAssignment()">Save Assignment</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Date</th><th>Route</th><th>Rider</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="assign-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="page-export" class="page hidden">
+        <div class="page-title">Export</div>
+        <div class="page-sub">Download all feedback as a spreadsheet-ready CSV file</div>
+        <div class="card" style="max-width:420px;">
+          <button class="btn btn-orange btn-full" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+      </div>
+
+      <div id="page-users" class="page hidden">
+        <div class="page-title">Users</div>
+        <div class="page-sub">Create and manage logins. Only Post Master can see this page.</div>
+        <div class="card" style="max-width:480px;">
+          <label>Full Name</label>
+          <input type="text" id="u-name" placeholder="e.g. Kwame Asante">
+          <label style="margin-top:12px;">Username</label>
+          <input type="text" id="u-username" placeholder="e.g. kwame">
+          <label style="margin-top:12px;">Role</label>
+          <select id="u-role">
+            <option value="Post Master">Post Master</option>
+            <option value="Operations Head">Operations Head</option>
+            <option value="EMS Coordinator">EMS Coordinator</option>
+            <option value="Regional Head">Regional Head</option>
+          </select>
+          <label style="margin-top:12px;">PIN</label>
+          <input type="password" id="u-pin" placeholder="4-8 digit PIN" maxlength="8">
+          <button class="btn btn-success btn-full" style="margin-top:16px;" onclick="createUser()">Create Login</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th></th></tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-wrap"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+  // ============================================================
+  // YOUR DEPLOYMENT URL - REPLACE WITH YOUR ACTUAL URL
+  // ============================================================
+  const API_URL = 'https://script.google.com/macros/s/AKfycbz4QUrSZXERGnGDkkCmgbAUIojgUqFl5v3DevaJ9cQzUc-cQuWk2gzTLZ3zB_O-ELHJ/exec';
+  
+  let STATE = { user: null, data: null, charts: {}, users: [] };
+
+  const NAV = [
+    { id:'overview', icon:'📊', label:'Overview' },
+    { id:'reports',  icon:'📈', label:'Reports & Analytics' },
+    { id:'feedback', icon:'📅', label:'Feedback by Date' },
+    { id:'routes',   icon:'🛣️', label:'Routes' },
+    { id:'riders',   icon:'🏍️', label:'Rider Assignments', requiresEdit:true },
+    { id:'export',   icon:'📤', label:'Export' },
+    { id:'users',    icon:'👤', label:'Users', requiresUserAdmin:true }
+  ];
+
+  // Role permissions - controls what each role can do
+  const ROLES = {
+    'Post Master':      { canEdit: true,  canManageUsers: true,  icon: '📮' },
+    'Operations Head':  { canEdit: true,  canManageUsers: false, icon: '⚙️' },
+    'EMS Coordinator':  { canEdit: true,  canManageUsers: false, icon: '🚑' },
+    'Regional Head':    { canEdit: false, canManageUsers: false, icon: '👁️' }
+  };
+
+  // DEFAULT USERS - these are created automatically if they don't exist in the backend
+  const DEFAULT_USERS = [
+    { name:'Post Master', username:'postmaster', role:'Post Master', pin:'1234' },
+    { name:'Operations Head', username:'opshead', role:'Operations Head', pin:'1234' },
+    { name:'EMS Coordinator', username:'emscoord', role:'EMS Coordinator', pin:'1234' },
+    { name:'Regional Head', username:'regional', role:'Regional Head', pin:'1234' }
+  ];
+
+  function $(id) { return document.getElementById(id); }
+
+  function toast(msg, type) {
+    type = type || 'ok';
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = msg;
+    $('toast-wrap').appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  // ─── LOGIN ───
+  function populateLoginDropdown() {
+    fetch(API_URL + '?action=listUsers')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) throw new Error(res.error || 'listUsers failed');
+        if (!res.users || !res.users.length) throw new Error('No users returned');
+        // Use the actual user accounts from the backend
+        fillLoginDropdown(res.users.filter(u => u.active));
+      })
+      .catch(err => {
+        console.warn('Could not load users from backend, using fallback list:', err.message);
+        toast('⚠️ Using default logins (backend not reachable)', 'warn');
+        // Show the default users as available logins
+        fillLoginDropdown(DEFAULT_USERS.map(u => ({ ...u, active: true })));
+      });
+  }
+
+  function fillLoginDropdown(users) {
+    // Show the role name in the dropdown (display name)
+    $('loginUser').innerHTML = '<option value="">Select your role…</option>' +
+      users.map(u => `<option value="${esc(u.username)}">${esc(u.name)} (${esc(u.role)})</option>`).join('');
+  }
+
+  function doLogin() {
+    const username = $('loginUser').value;
+    const pin = $('loginPw').value.trim();
+    if (!username) { toast('Select your role', 'warn'); return; }
+    if (!pin) { toast('Enter your PIN', 'warn'); return; }
+
+    $('login-view').classList.add('hidden');
+    $('loading-overlay').classList.remove('hidden');
+    setLoadStep(0, 'Verifying credentials…');
+
+    // First try to authenticate with the backend
+    fetch(API_URL, { 
+      method: 'POST', 
+      body: JSON.stringify({ action:'login', username, pin }) 
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.ok && res.account) {
+          // Successfully logged in via backend
+          STATE.user = res.account;
+          completeLogin();
+          return;
+        }
+        // If backend login fails, check against default users
+        const defaultUser = DEFAULT_USERS.find(u => u.username === username && u.pin === pin);
+        if (defaultUser) {
+          STATE.user = { 
+            name: defaultUser.name, 
+            username: defaultUser.username, 
+            role: defaultUser.role 
+          };
+          completeLogin();
+          return;
+        }
+        // Both failed
+        $('loading-overlay').classList.add('hidden');
+        $('login-view').classList.remove('hidden');
+        toast('❌ Invalid username or PIN', 'err');
+      })
+      .catch(err => {
+        // If fetch fails, try default users
+        const defaultUser = DEFAULT_USERS.find(u => u.username === username && u.pin === pin);
+        if (defaultUser) {
+          STATE.user = { 
+            name: defaultUser.name, 
+            username: defaultUser.username, 
+            role: defaultUser.role 
+          };
+          completeLogin();
+          return;
+        }
+        $('loading-overlay').classList.add('hidden');
+        $('login-view').classList.remove('hidden');
+        toast('⚠️ ' + err.message, 'err');
+      });
+  }
+
+  function completeLogin() {
+    setLoadStep(1, 'Loading delivery data…');
+    loadData(() => {
+      setLoadStep(2, 'Building dashboard…');
+      setTimeout(() => {
+        setLoadStep(3, 'Ready!');
+        setTimeout(() => {
+          $('loading-overlay').classList.add('hidden');
+          $('app-view').classList.remove('hidden');
+          const roleInfo = ROLES[STATE.user.role] || { icon: '👁️' };
+          $('uName').textContent = STATE.user.name;
+          $('uRole').textContent = (roleInfo.icon || '👁️') + ' ' + STATE.user.role;
+          buildNav();
+          showPage('overview');
+        }, 250);
+      }, 250);
+    });
+  }
+
+  function logout() {
+    if (!confirm('Log out?')) return;
+    STATE.user = null;
+    $('app-view').classList.add('hidden');
+    $('login-view').classList.remove('hidden');
+    $('loginPw').value = '';
+    $('loginUser').value = '';
+    populateLoginDropdown();
+  }
+
+  function setLoadStep(idx, msg) {
+    $('loadSub').textContent = msg;
+    for (let i = 0; i < 4; i++) {
+      const el = $('ls' + i);
+      el.className = 'loader-step' + (i < idx ? ' done' : i === idx ? ' active' : '');
+    }
+  }
+
+  // ─── NAV ───
+  function buildNav() {
+    const roleInfo = ROLES[STATE.user.role] || {};
+    $('navItems').innerHTML = NAV
+      .filter(n => (!n.requiresEdit || roleInfo.canEdit) && (!n.requiresUserAdmin || roleInfo.canManageUsers))
+      .map(n => `<div class="nav-item" data-page="${n.id}" onclick="showPage('${n.id}')"><span>${n.icon}</span><span>${n.label}</span></div>`)
+      .join('');
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    $('page-' + id).classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+    closeDrawer();
+    if (id === 'users') renderUsers();
+    if (id === 'reports' && STATE.data) renderReports(STATE.data);
+  }
+
+  function toggleDrawer() { $('mainSidebar').classList.toggle('open'); $('sidebarOverlay').classList.toggle('active'); }
+  function closeDrawer() { $('mainSidebar').classList.remove('open'); $('sidebarOverlay').classList.remove('active'); }
+
+  // ─── DATA LOADING ───
+  function loadData(cb) {
+    fetch(API_URL + '?action=loadData')
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok === false) {
+          toast('⚠️ Server error: ' + (data.error || 'Unknown error'), 'err');
+          if (cb) cb();
+          return;
+        }
+        STATE.data = data;
+        renderAll();
+        if (cb) cb();
+      })
+      .catch(err => {
+        toast('⚠️ Could not load data: ' + err.message, 'err');
+        if (cb) cb();
+      });
+  }
+
+  function renderAll() {
+    const d = STATE.data;
+    if (!d) return;
+    renderOverview(d);
+    renderReports(d);
+    renderSections(d.sections || []);
+    renderRoutesPage(d.sections || []);
+    renderRouteOptions(d.routeOptions || []);
+    renderAssignments(d.assignments || []);
+  }
+
+  function esc(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ─── STAR RATING ───
+  function starsHtml(rating, size) {
+    size = size || '';
+    if (rating === null || rating === undefined || isNaN(rating)) {
+      return '<span class="text-xs text-muted">No rating</span>';
+    }
+    const full = Math.round(rating);
+    let html = `<span class="stars ${size}" title="${rating}/5">`;
+    for (let i = 1; i <= 5; i++) {
+      html += `<span class="star${i <= full ? ' filled' : ''}" style="animation-delay:${i*70}ms">★</span>`;
+    }
+    html += `<span style="margin-left:5px;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);">${rating}</span></span>`;
+    return html;
+  }
+
+  // ─── YES/NO BADGE ───
+  function badgeHtml(label, value) {
+    const v = String(value == null ? '' : value).trim().toLowerCase();
+    let cls = 'badge-unknown', icon = '•', text = '—';
+    if (v === 'yes' || v === 'true') { cls = 'badge-yes'; icon = '✓'; text = 'Yes'; }
+    else if (v === 'no' || v === 'false') { cls = 'badge-no'; icon = '✕'; text = 'No'; }
+    else if (v) { text = value; }
+    return `<span class="badge ${cls}">${icon} ${esc(label)}: ${esc(text)}</span>`;
+  }
+
+  // ─── COUNT-UP ANIMATION ───
+  function animateCounters(containerId) {
+    document.querySelectorAll('#' + containerId + ' .num[data-count]').forEach(el => {
+      const target = parseInt(el.dataset.count, 10) || 0;
+      const startTime = performance.now();
+      const duration = 700;
+      function tick(now) {
+        const p = Math.min(1, (now - startTime) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased);
+        if (p < 1) requestAnimationFrame(tick); else el.textContent = target;
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // ─── OVERVIEW ───
+  function renderOverview(d) {
+    const o = d.overall || { totalResponses: 0, totalRoutes: 0, avgRating: null, totalRidersAssigned: 0 };
+    $('ov-stats').innerHTML = `
+      <div class="stat-card"><div class="num" data-count="${o.totalResponses}">0</div><div class="label">Total Responses</div></div>
+      <div class="stat-card"><div class="num" data-count="${o.totalRoutes}">0</div><div class="label">Routes Covered</div></div>
+      <div class="stat-card"><div class="num" style="font-size:1.3rem;">${o.avgRating !== null ? starsHtml(o.avgRating) : '—'}</div><div class="label">Avg Rating</div></div>
+      <div class="stat-card"><div class="num" data-count="${o.totalRidersAssigned}">0</div><div class="label">Riders Assigned</div></div>
+    `;
+    animateCounters('ov-stats');
+
+    const sections = d.sections || [];
+    if (!sections.length) {
+      $('ov-recent').innerHTML = '<div class="empty-state">📭 No responses yet. Once customers scan the QR code and submit feedback, it will show up here.</div>';
+      return;
+    }
+    const recent = sections[0];
+    $('ov-recent').innerHTML = `
+      <div class="text-sm">${recent.dateLabel} — ${recent.totalResponses} response(s)</div>
+      <div style="margin-top:4px;">${recent.avgRating !== null ? starsHtml(recent.avgRating) : '<span class="text-xs text-muted">No rating</span>'}</div>
+      ${(recent.routes || []).slice(0,5).map((r,i) => `<div class="text-xs text-muted" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;animation:fadeSlideUp .4s backwards; animation-delay:${i*60}ms;">
+        <span>📍 ${esc(r.route)} — ${r.count} response(s)</span>${r.avgRating !== null ? starsHtml(r.avgRating) : ''}
+      </div>`).join('')}
+    `;
+  }
+
+  // ─── REPORTS ───
+  function renderReports(d) {
+    if (!$('page-reports')) return;
+    const sections = d.sections || [];
+
+    const chrono = sections.slice().reverse();
+    const labels = chrono.map(s => s.dateLabel);
+    const ratings = chrono.map(s => s.avgRating);
+    const volumes = chrono.map(s => s.totalResponses);
+
+    let ratingDelta = null, volDelta = null;
+    if (chrono.length >= 2) {
+      const last = chrono[chrono.length-1], prev = chrono[chrono.length-2];
+      if (last.avgRating !== null && prev.avgRating !== null) ratingDelta = Math.round((last.avgRating - prev.avgRating) * 10) / 10;
+      volDelta = last.totalResponses - prev.totalResponses;
+    }
+    $('rep-stats').innerHTML = `
+      <div class="stat-card"><div class="num" data-count="${chrono.length}">0</div><div class="label">Days Tracked</div></div>
+      <div class="stat-card"><div class="num">${chrono.length ? (chrono[chrono.length-1].avgRating ?? '—') : '—'}</div><div class="label">Latest Avg Rating</div></div>
+      <div class="stat-card"><div class="num" style="color:${ratingDelta > 0 ? 'var(--green)' : ratingDelta < 0 ? 'var(--red)' : 'var(--text)'}">${ratingDelta === null ? '—' : (ratingDelta > 0 ? '+' : '') + ratingDelta}</div><div class="label">Rating vs Prior Day</div></div>
+      <div class="stat-card"><div class="num" style="color:${volDelta > 0 ? 'var(--green)' : volDelta < 0 ? 'var(--red)' : 'var(--text)'}">${volDelta === null ? '—' : (volDelta > 0 ? '+' : '') + volDelta}</div><div class="label">Responses vs Prior Day</div></div>
+    `;
+    animateCounters('rep-stats');
+
+    if (typeof Chart === 'undefined' || !sections.length) return;
+
+    const agg = {};
+    sections.forEach(s => (s.routes || []).forEach(r => {
+      if (!agg[r.route]) agg[r.route] = { route:r.route, count:0, onTimeSum:0, courteousSum:0 };
+      const a = agg[r.route];
+      a.count += r.count;
+      if (r.onTimePct !== null) a.onTimeSum += r.onTimePct * r.count;
+      if (r.courteousPct !== null) a.courteousSum += r.courteousPct * r.count;
+    }));
+    const routeList = Object.values(agg).sort((a,b) => b.count - a.count).slice(0, 8);
+
+    const chartOpts = {
+      plugins:{ legend:{ labels:{ color:'#b0c8f0' } } },
+      scales:{
+        x:{ ticks:{ color:'#b0c8f0' }, grid:{ color:'rgba(255,255,255,.08)' } },
+        y:{ ticks:{ color:'#b0c8f0' }, grid:{ color:'rgba(255,255,255,.08)' } }
+      }
+    };
+
+    Object.values(STATE.charts).forEach(c => c && c.destroy());
+
+    STATE.charts.rating = new Chart($('chartRating'), {
+      type:'line',
+      data:{ labels, datasets:[{ label:'Avg Rating', data:ratings, borderColor:'#22d3ee', backgroundColor:'rgba(34,211,238,.15)', tension:.3, fill:true, spanGaps:true }] },
+      options:{ ...chartOpts, scales:{ ...chartOpts.scales, y:{ ...chartOpts.scales.y, min:0, max:5 } } }
+    });
+
+    STATE.charts.volume = new Chart($('chartVolume'), {
+      type:'bar',
+      data:{ labels, datasets:[{ label:'Responses', data:volumes, backgroundColor:'#f59e0b' }] },
+      options: chartOpts
+    });
+
+    STATE.charts.onTime = new Chart($('chartOnTime'), {
+      type:'bar',
+      data:{
+        labels: routeList.map(r => r.route),
+        datasets:[
+          { label:'On-Time %', data: routeList.map(r => r.count ? Math.round(r.onTimeSum/r.count) : 0), backgroundColor:'#34d399' },
+          { label:'Courteous %', data: routeList.map(r => r.count ? Math.round(r.courteousSum/r.count) : 0), backgroundColor:'#a78bfa' }
+        ]
+      },
+      options: chartOpts
+    });
+  }
+
+  // ─── FEEDBACK BY DATE ───
+  function renderSections(sections) {
+    const el = $('sections');
+    if (!sections.length) {
+      el.innerHTML = '<div class="empty-state">📭 No responses yet.</div>';
+      return;
+    }
+    el.innerHTML = sections.map((s, idx) => `
+      <div class="date-section${idx===0 ? ' open':''}" id="sec-${idx}" style="animation-delay:${idx*45}ms">
+        <div class="date-header" onclick="toggleSection(${idx})">
+          <div>
+            <div class="title">${s.dateLabel}</div>
+            <div class="sub">${s.totalResponses} response(s)</div>
+          </div>
+          <div class="flex items-center gap-3">
+            ${s.avgRating !== null ? starsHtml(s.avgRating) : ''}
+            <div class="chevron">▶</div>
+          </div>
+        </div>
+        <div class="date-body">
+          ${(s.routes || []).map(r => routeCardHtml(r, s.dateKey)).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function routeCardHtml(r, dateKey) {
+    const chips = (r.riders || []).length
+      ? (r.riders || []).map(n => `<span class="chip chip-green">🏍️ ${esc(n)}</span>`).join('')
+      : '<span class="chip chip-red">No rider assigned</span>';
+    const tableId = 'tbl-' + dateKey + '-' + r.route.replace(/[^a-z0-9]/gi,'');
+    return `
+      <div class="route-card">
+        <div class="route-top">
+          <div>
+            <div class="route-name">📍 ${esc(r.route)}</div>
+            <div>${chips}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="text-xs text-muted" style="margin-bottom:3px;">${r.count} response(s)</div>
+            ${r.avgRating !== null ? starsHtml(r.avgRating) : ''}
+          </div>
+        </div>
+        <div class="metrics">
+          <div>On-time: <b>${r.onTimePct !== null ? r.onTimePct + '%' : '—'}</b></div>
+          <div>Courteous: <b>${r.courteousPct !== null ? r.courteousPct + '%' : '—'}</b></div>
+          <div>Contacted before: <b>${r.contactedBeforePct !== null ? r.contactedBeforePct + '%' : '—'}</b></div>
+          ${r.wantsContactCount > 0 ? `<div style="color:var(--amber);">⚠ ${r.wantsContactCount} want follow-up</div>` : ''}
+        </div>
+        <span class="toggle-link" onclick="toggleTable('${tableId}')">View individual responses ▾</span>
+        <div class="resp-grid hidden-table" id="${tableId}">
+          ${(r.responses || []).map((x, i) => responseCardHtml(x, i)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function responseCardHtml(x, i) {
+    const delay = (i * 55) + 'ms';
+    const wants = String(x.wantsContact == null ? '' : x.wantsContact).trim();
+    const isFollowUp = /^yes/i.test(wants) || (wants && !/^no$/i.test(wants));
+    return `
+      <div class="resp-card" style="animation-delay:${delay}">
+        <div class="resp-top">
+          <span class="resp-time">🕒 ${esc(x.time || '—')}</span>
+          ${starsHtml(x.rating)}
+        </div>
+        ${x.locationType ? `<div class="resp-loc">🏠 ${esc(x.locationType)}</div>` : ''}
+        <div class="resp-badges">
+          ${badgeHtml('On time', x.onTime)}
+          ${badgeHtml('Courteous', x.courteous)}
+          ${badgeHtml('Contacted first', x.contactedBefore)}
+        </div>
+        ${wants ? `<div class="resp-note">${isFollowUp ? '📞' : '💬'} ${esc(wants)}</div>` : ''}
+      </div>
+    `;
+  }
+
+  function toggleSection(idx) { $('sec-' + idx).classList.toggle('open'); }
+  function toggleTable(id) { $(id).classList.toggle('hidden-table'); }
+
+  // ─── ROUTES PAGE ───
+  function renderRoutesPage(sections) {
+    const agg = {};
+    sections.forEach(s => (s.routes || []).forEach(r => {
+      if (!agg[r.route]) agg[r.route] = { route:r.route, count:0, ratingSum:0, ratingN:0, onTimeSum:0, courteousSum:0, riders:new Set() };
+      const a = agg[r.route];
+      a.count += r.count;
+      if (r.avgRating !== null) { a.ratingSum += r.avgRating * r.count; a.ratingN += r.count; }
+      if (r.onTimePct !== null) a.onTimeSum += r.onTimePct * r.count;
+      if (r.courteousPct !== null) a.courteousSum += r.courteousPct * r.count;
+      (r.riders || []).forEach(n => a.riders.add(n));
+    }));
+    const list = Object.values(agg).sort((a,b) => b.count - a.count);
+    if (!list.length) { $('routes-list').innerHTML = '<div class="empty-state">No routes yet.</div>'; return; }
+    $('routes-list').innerHTML = list.map((a, i) => `
+      <div class="card" style="animation:fadeSlideUp .5s cubic-bezier(.22,1,.36,1) backwards; animation-delay:${i*45}ms;">
+        <div class="flex justify-between items-center">
+          <div class="font-bold">📍 ${esc(a.route)}</div>
+          <div class="text-xs text-muted">${a.count} response(s)</div>
+        </div>
+        <div style="margin:6px 0;">${a.ratingN ? starsHtml(Math.round(a.ratingSum/a.ratingN*10)/10) : '<span class="text-xs text-muted">No rating</span>'}</div>
+        <div class="metrics">
+          <div>On-time: <b>${a.count ? Math.round(a.onTimeSum/a.count) + '%' : '—'}</b></div>
+          <div>Courteous: <b>${a.count ? Math.round(a.courteousSum/a.count) + '%' : '—'}</b></div>
+        </div>
+        <div style="margin-top:8px;">${a.riders.size ? Array.from(a.riders).map(n=>`<span class="chip chip-green">${esc(n)}</span>`).join('') : '<span class="chip chip-red">No riders on record</span>'}</div>
+      </div>
+    `).join('');
+  }
+
+  // ─── RIDER ASSIGNMENTS ───
+  function renderRouteOptions(routes) {
+    $('route-options').innerHTML = routes.map(r => `<option value="${esc(r)}">`).join('');
+  }
+
+  function renderAssignments(list) {
+    if (!list || !list.length) {
+      $('assign-tbody').innerHTML = '<tr><td colspan="5" class="text-muted">No rider assignments yet.</td></tr>';
+      return;
+    }
+    $('assign-tbody').innerHTML = list.slice().reverse().map(a => `
+      <tr>
+        <td>${esc(a.dateKey)}</td>
+        <td>${esc(a.route)}</td>
+        <td>${esc(a.riderName)}</td>
+        <td>${esc(a.notes)}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="removeAssignment(${a.rowIndex})">Remove</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function submitAssignment() {
+    const roleInfo = ROLES[STATE.user.role] || {};
+    if (!roleInfo.canEdit) { toast('Your role does not have edit access', 'err'); return; }
+    
+    const date = $('a-date').value;
+    const route = $('a-route').value.trim();
+    const rider = $('a-rider').value.trim();
+    const notes = $('a-notes').value.trim();
+    if (!date || !route || !rider) { toast('Fill in date, route, and rider name', 'warn'); return; }
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action:'addRider', date, route, riderName:rider, notes })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+        toast('✅ Rider assignment saved');
+        $('a-route').value = ''; $('a-rider').value = ''; $('a-notes').value = '';
+        loadData();
+      })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function removeAssignment(rowIndex) {
+    const roleInfo = ROLES[STATE.user.role] || {};
+    if (!roleInfo.canEdit) { toast('Your role does not have edit access', 'err'); return; }
+    if (!confirm('Remove this assignment?')) return;
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'deleteRider', rowIndex }) })
+      .then(r => r.json())
+      .then(res => { if (res.ok) { toast('🗑️ Removed'); loadData(); } else { toast('Error: ' + res.error, 'err'); } })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  // ─── USERS ───
+  function renderUsers() {
+    fetch(API_URL + '?action=listUsers')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+        STATE.users = res.users || [];
+        $('users-tbody').innerHTML = STATE.users.map(u => `
+          <tr>
+            <td>${esc(u.name)}</td>
+            <td>${esc(u.username)}</td>
+            <td>${(ROLES[u.role]||{}).icon || ''} ${esc(u.role)}</td>
+            <td>${u.active ? '<span class="chip chip-green">Active</span>' : '<span class="chip chip-red">Deactivated</span>'}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm" onclick="toggleUserActive('${esc(u.username)}')">${u.active ? 'Deactivate' : 'Reactivate'}</button>
+              <button class="btn btn-ghost btn-sm" onclick="deleteUserRow('${esc(u.username)}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function createUser() {
+    const name = $('u-name').value.trim();
+    const username = $('u-username').value.trim();
+    const role = $('u-role').value;
+    const pin = $('u-pin').value.trim();
+    if (!name || !username || !pin) { toast('Fill in name, username, and PIN', 'warn'); return; }
+    if (!/^\d{4,8}$/.test(pin)) { toast('PIN must be 4-8 digits', 'warn'); return; }
+
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'createUser', name, username, role, pin }) })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+        toast('✅ Login created for ' + name);
+        $('u-name').value = ''; $('u-username').value = ''; $('u-pin').value = '';
+        renderUsers();
+      })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function toggleUserActive(username) {
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'toggleUser', username }) })
+      .then(r => r.json())
+      .then(res => { if (res.ok) renderUsers(); else toast('Error: ' + res.error, 'err'); })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  function deleteUserRow(username) {
+    if (!confirm('Delete this login? This cannot be undone.')) return;
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'deleteUser', username }) })
+      .then(r => r.json())
+      .then(res => { if (res.ok) renderUsers(); else toast('Error: ' + res.error, 'err'); })
+      .catch(err => toast('⚠️ ' + err.message, 'err'));
+  }
+
+  // ─── EXPORT ───
+  function exportCSV() {
+    const d = STATE.data;
+    if (!d || !d.sections || !d.sections.length) { toast('No data to export', 'warn'); return; }
+    const headers = ['Date','Route','Rider(s)','Time','Location Type','Rating','On Time','Courteous','Contacted Before','Wants Follow-up'];
+    const rows = [headers];
+    d.sections.forEach(s => (s.routes || []).forEach(r => (r.responses || []).forEach(x => {
+      rows.push([s.dateKey, r.route, (r.riders || []).join('; '), x.time, x.locationType, x.rating, x.onTime, x.courteous, x.contactedBefore, x.wantsContact || '']);
+    })));
+    const csv = rows.map(r => r.map(v => `"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'Delivery_Feedback_Export.csv';
+    a.click();
+    toast('CSV exported');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !$('login-view').classList.contains('hidden')) doLogin();
+  });
+
+  $('loading-overlay').classList.add('hidden');
+  populateLoginDropdown();
+</script>
+</body>
+</html>
